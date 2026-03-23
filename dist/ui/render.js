@@ -9,8 +9,8 @@ export function renderPokemon(pokemon) {
         ${pokemon.typesHtml} </div>
 
         <div class="measurements">
-        <span>📏 ${pokemon.heightText}m</span>
-        <span>⚖️ ${pokemon.weightText}kg</span>
+        <span>📏 ${pokemon.heightText}</span>
+        <span>⚖️ ${pokemon.weightText}</span>
         </div>
 
         <div class="stats-container">
