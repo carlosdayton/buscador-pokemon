@@ -1,3 +1,4 @@
+// INICIA A BUSCA DOS DADOS DOS POKEMONS
 import { fetchPokemon } from './services/pokemonService.js';
 import { mapPokemonToUI } from './mappers/pokemonMapper.js';
 import { renderPokemon, renderError } from './ui/render.js';

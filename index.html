@@ -3,166 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <title>Buscador de Pokémon</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #0f172a);
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      color: #f8fafc;
+    }
 
-  body { 
-    font-family: 'Inter', sans-serif; 
-    background-color: #f3f4f6; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    color: #333;
-  }
+    @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-  h1 { margin-bottom: 20px; font-weight: 800; color: #111827; }
+    .search-container, #result { width: 100%; max-width: 550px; }
 
-  .search-container {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 30px;
-  }
+    .search-container {
+      display: flex;
+      margin-bottom: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-  input { 
-    flex: 1;
-    padding: 12px 16px; 
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+    input { flex: 1; padding: 12px 16px; border: none; background: transparent; color: white; font-size: 16px; outline: none; }
+    button { padding: 12px 24px; background-color: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
-  input:focus { border-color: #3b82f6; }
+    /* CARD DESIGN */
+    .pokemon-card {
+      background: white;
+      color: #1e293b;
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: cardEnter 0.4s ease-out;
+    }
 
-  button { 
-    padding: 12px 24px; 
-    background-color: #3b82f6; 
-    color: white; 
-    border: none; 
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer; 
-    transition: background-color 0.2s;
-  }
+    .pokemon-img { width: 200px; height: 200px; margin: 20px 0; object-fit: contain; }
 
-  button:hover { background-color: #2563eb; }
+    /* RESOLVENDO A SOBREPOSIÇÃO */
+    .types-container { display: flex; gap: 10px; margin-bottom: 20px; }
+    
+    .measurements { 
+      display: flex; 
+      justify-content: center; 
+      gap: 40px; 
+      margin-bottom: 30px; 
+      width: 100%;
+      color: #64748b;
+      font-weight: 600;
+    }
 
-  #result { width: 100%; max-width: 350px; }
+    /* STATUS LARGOS */
+    .stats-container { width: 100%; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+    .stat-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .stat-name { color: #64748b; text-transform: uppercase; font-size: 12px; font-weight: 700; }
+    .stat-value { font-weight: 800; color: #1e293b; }
 
-  /* --- Estilos do Card --- */
-  .pokemon-card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: fadeIn 0.3s ease-in-out;
-  }
+    .type-badge { padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; text-transform: uppercase; }
+    .type-water { background-color: #6390F0; color: white; }
+    .type-ground { background-color: #E2BF65; color: #333; }
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  .card-header h2 { font-size: 20px; font-weight: 800; }
-  .pokemon-id { color: #6b7280; font-weight: 600; font-size: 14px; }
-
-  .pokemon-img { 
-    width: 150px; 
-    height: 150px; 
-    object-fit: contain;
-    background: #f9fafb;
-    border-radius: 50%;
-    margin-bottom: 16px;
-  }
-
-  .pokemon-types {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  .type-badge {
-    background-color: #e5e7eb;
-    color: #374151;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .pokemon-measurements {
-    display: flex;
-    gap: 20px;
-    font-size: 14px;
-    color: #4b5563;
-    margin-bottom: 20px;
-    background: #f3f4f6;
-    padding: 10px 20px;
-    border-radius: 8px;
-  }
-
-  .pokemon-stats { width: 100%; }
-
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 14px;
-  }
-
-  .stat-row:last-child { border-bottom: none; }
-  .stat-name { text-transform: capitalize; color: #6b7280; }
-  .stat-value { font-weight: 800; color: #111827; }
-
-  .error { color: #ef4444; font-weight: 600; text-align: center; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* --- Cores dos Tipos de Pokémon --- */
-  .type-normal { background-color: #A8A77A; color: white; }
-  .type-fire { background-color: #EE8130; color: white; }
-  .type-water { background-color: #6390F0; color: white; }
-  .type-electric { background-color: #F7D02C; color: #333; }
-  .type-grass { background-color: #7AC74C; color: #333; }
-  .type-ice { background-color: #96D9D6; color: #333; }
-  .type-fighting { background-color: #C22E28; color: white; }
-  .type-poison { background-color: #A33EA1; color: white; }
-  .type-ground { background-color: #E2BF65; color: #333; }
-  .type-flying { background-color: #A98FF3; color: #333; }
-  .type-psychic { background-color: #F95587; color: white; }
-  .type-bug { background-color: #A6B91A; color: #333; }
-  .type-rock { background-color: #B6A136; color: white; }
-  .type-ghost { background-color: #735797; color: white; }
-  .type-dragon { background-color: #6F35FC; color: white; }
-  .type-dark { background-color: #705848; color: white; }
-  .type-steel { background-color: #B7B7CE; color: #333; }
-  .type-fairy { background-color: #D685AD; color: #333; }
-</style>
+    @keyframes cardEnter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .loader { border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
   <h1>🔍 Buscar Pokémon</h1>
-  <input class="search-container" type="text" id="input" placeholder="Ex: pikachu" />
-  <button class="search-container" id="btn">Buscar</button>
+  <div class="search-container">
+    <input type="text" id="input" placeholder="Ex: pikachu" />
+    <button id="btn">Buscar</button>
+  </div>
   <div id="result"></div>
-
   <script type="module" src="dist/main.js"></script>
 </body>
 </html>
