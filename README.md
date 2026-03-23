@@ -20,9 +20,9 @@ O projeto foge do padrão "God File" (um único arquivo fazendo tudo) e adota um
 
 \`\`\`text
 src/
-├── types/         # Interfaces e contratos de dados (ex: Pokemon, MappedPokemon)
+├── types/         # Interfaces e contratos de dados
 ├── services/      # Camada de infraestrutura e comunicação com a API externa (fetch)
-├── mappers/       # Camada Adapter: Transforma dados brutos da API em dados formatados para a UI
+├── mappers/       # Camada Adapter: Transforma dados da API para a UI
 ├── ui/            # Camada de apresentação "burra": Apenas manipula o DOM
 └── main.ts        # Ponto de entrada e orquestrador de eventos
 \`\`\`
