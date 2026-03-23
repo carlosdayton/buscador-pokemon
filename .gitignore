@@ -1,0 +1,7 @@
+# Ignora pastas do sistema e do editor de código
+.vscode/
+.idea/
+.DS_Store
+
+# (Futuro) Quando você usar npm/yarn, isso ignorará os pacotes pesados
+node_modules/

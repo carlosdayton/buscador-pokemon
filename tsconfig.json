@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    /* Módulos e Compilação */
+    "target": "ES2020", 
+    "module": "ESNext", 
+    "moduleResolution": "node",
+
+    /* Estrutura de Pastas */
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* Qualidade e Boas Práticas */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    
+    /* Interoperabilidade */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}
