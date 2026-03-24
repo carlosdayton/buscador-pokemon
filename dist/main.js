@@ -1,10 +1,9 @@
-// INICIA A BUSCA DOS DADOS DOS POKEMONS
 import { fetchPokemon } from './services/pokemonService.js';
 import { mapPokemonToUI } from './mappers/pokemonMapper.js';
-import { renderPokemon, renderError } from './ui/render.js';
+import { renderPokemon, renderError, renderHistory } from './ui/render.js';
+import { addToHistory, getHistory, clearHistory } from './services/historyService.js';
 const btn = document.getElementById("btn");
 const input = document.getElementById("input");
-// 1. Isolamos a lógica principal numa função assíncrona
 async function handleSearch() {
     const name = input.value.trim();
     if (!name) {
@@ -13,10 +12,15 @@ async function handleSearch() {
     }
     try {
         const result = document.getElementById("result");
-        result.innerHTML = "<p>A pesquisar...</p>"; // Estado de carregamento
+        result.innerHTML = "<div class='loader'></div>";
         const rawPokemon = await fetchPokemon(name);
         const mappedPokemon = mapPokemonToUI(rawPokemon);
         renderPokemon(mappedPokemon);
+        addToHistory(mappedPokemon);
+        renderHistory(getHistory());
+        // Delega o clique no "Limpar" para o documento
+        // porque o botão é criado dinamicamente pelo renderHistory
+        input.value = '';
     }
     catch (error) {
         if (error instanceof Error) {
@@ -24,11 +28,28 @@ async function handleSearch() {
         }
     }
 }
-// 2. O botão chama a função ao ser clicado
-btn.addEventListener("click", handleSearch);
-// 3. O input escuta o teclado e chama a função se a tecla for "Enter"
-input.addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
-        handleSearch();
+// Delegação de evento para o botão "Limpar" (criado dinamicamente)
+document.addEventListener("click", (event) => {
+    const target = event.target;
+    // ✅ Conceito: event delegation — um único listener no documento
+    // captura cliques de elementos criados dinamicamente
+    if (target.id === "clear-btn") {
+        clearHistory();
+        renderHistory(getHistory());
+    }
+    // Clique em item do histórico refaz a busca
+    const historyItem = target.closest(".history-item");
+    if (historyItem) {
+        const pokemonName = historyItem.dataset.name;
+        if (pokemonName) {
+            input.value = pokemonName;
+            handleSearch();
+        }
     }
 });
+btn.addEventListener("click", handleSearch);
+input.addEventListener("keypress", (event) => {
+    if (event.key === "Enter")
+        handleSearch();
+});
+renderHistory(getHistory());

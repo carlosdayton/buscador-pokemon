@@ -1,5 +1,7 @@
 // MODELO DE COMO DEVE SER ENTREGUE OS DADOS DOS POKEMONS
 
+import { MappedPokemon } from "../mappers/pokemonMapper";
+
 export interface PokemonSprites {
     front_default: string;
 }
@@ -25,4 +27,9 @@ export interface Pokemon {
     sprites: PokemonSprites;
     types: PokemonType[];
     stats: PokemonStat[];
+}
+
+export interface SearchHistory {
+    pokemon: MappedPokemon;
+    searchedAt: Date;
 }

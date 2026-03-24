@@ -2,7 +2,7 @@ export function mapPokemonToUI(apiData) {
     return {
         // ... (mantenha as outras propriedades iguais)
         name: apiData.name.toUpperCase(),
-        id: `#${apiData.id.toString().padStart(3, '0')}`,
+        displayId: `#${apiData.id.toString().padStart(3, '0')}`,
         imageUrl: apiData.sprites.front_default,
         // 👇 A MÁGICA ACONTECE AQUI 👇
         typesHtml: apiData.types

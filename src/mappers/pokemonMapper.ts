@@ -3,7 +3,7 @@ import { Pokemon } from '../types/pokemon.js';
 export interface MappedPokemon {
     // ... (mantenha o restante da interface igual)
     name: string;
-    id: string;
+    displayId: string;
     imageUrl: string;
     typesHtml: string;
     heightText: string;
@@ -15,7 +15,7 @@ export function mapPokemonToUI(apiData: Pokemon): MappedPokemon {
     return {
         // ... (mantenha as outras propriedades iguais)
         name: apiData.name.toUpperCase(),
-        id: `#${apiData.id.toString().padStart(3, '0')}`,
+        displayId: `#${apiData.id.toString().padStart(3, '0')}`,
         imageUrl: apiData.sprites.front_default,
         
         // 👇 A MÁGICA ACONTECE AQUI 👇
