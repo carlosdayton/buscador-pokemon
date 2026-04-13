@@ -4,10 +4,10 @@ import { renderPokemon, renderError, renderHistory } from './ui/render.js';
 import { addToHistory, getHistory, clearHistory } from './services/historyService.js';
 const btn = document.getElementById("btn");
 const input = document.getElementById("input");
-async function handleSearch() {
-    const name = input.value.trim();
+async function handleSearch(query) {
+    const name = (query ?? input.value).trim();
     if (!name) {
-        renderError("Digite o nome de um Pokémon!");
+        renderError("Digite o nome ou número de um Pokémon!");
         return;
     }
     try {
@@ -18,8 +18,6 @@ async function handleSearch() {
         renderPokemon(mappedPokemon);
         addToHistory(mappedPokemon);
         renderHistory(getHistory());
-        // Delega o clique no "Limpar" para o documento
-        // porque o botão é criado dinamicamente pelo renderHistory
         input.value = '';
     }
     catch (error) {
@@ -28,28 +26,69 @@ async function handleSearch() {
         }
     }
 }
-// Delegação de evento para o botão "Limpar" (criado dinamicamente)
+// Event delegation — captura cliques e teclado em elementos dinâmicos
 document.addEventListener("click", (event) => {
     const target = event.target;
-    // ✅ Conceito: event delegation — um único listener no documento
-    // captura cliques de elementos criados dinamicamente
     if (target.id === "clear-btn") {
         clearHistory();
         renderHistory(getHistory());
+        return;
     }
-    // Clique em item do histórico refaz a busca
     const historyItem = target.closest(".history-item");
     if (historyItem) {
         const pokemonName = historyItem.dataset.name;
-        if (pokemonName) {
-            input.value = pokemonName;
-            handleSearch();
+        if (pokemonName)
+            handleSearch(pokemonName);
+    }
+});
+// Navegação por teclado no histórico
+document.addEventListener("keydown", (event) => {
+    const target = event.target;
+    // Enter em item focado do histórico
+    if (event.key === "Enter" && target.classList.contains("history-item")) {
+        const pokemonName = target.dataset.name;
+        if (pokemonName)
+            handleSearch(pokemonName);
+        return;
+    }
+    // Setas para navegar entre itens do histórico
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        const items = Array.from(document.querySelectorAll(".history-item"));
+        if (items.length === 0)
+            return;
+        const currentIndex = items.indexOf(target);
+        if (event.key === "ArrowDown") {
+            const next = currentIndex === -1 ? items[0] : items[currentIndex + 1];
+            if (next) {
+                event.preventDefault();
+                next.focus();
+            }
+        }
+        else {
+            const prev = items[currentIndex - 1];
+            if (prev) {
+                event.preventDefault();
+                prev.focus();
+            }
+            else if (currentIndex === 0) {
+                input.focus();
+            }
         }
     }
 });
-btn.addEventListener("click", handleSearch);
+btn.addEventListener("click", () => handleSearch());
 input.addEventListener("keypress", (event) => {
     if (event.key === "Enter")
         handleSearch();
+});
+// Seta para baixo no input começa a navegar no histórico
+input.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+        const first = document.querySelector(".history-item");
+        if (first) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
 });
 renderHistory(getHistory());

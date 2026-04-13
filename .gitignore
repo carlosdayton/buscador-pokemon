@@ -5,3 +5,5 @@
 
 # (Futuro) Quando você usar npm/yarn, isso ignorará os pacotes pesados
 node_modules/
+
+# dist/ NÃO está ignorado — o GitHub Actions compila e o Pages serve os arquivos

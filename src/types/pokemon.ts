@@ -1,9 +1,12 @@
-// MODELO DE COMO DEVE SER ENTREGUE OS DADOS DOS POKEMONS
-
 import { MappedPokemon } from "../mappers/pokemonMapper";
 
 export interface PokemonSprites {
     front_default: string;
+    other: {
+        'official-artwork': {
+            front_default: string;
+        };
+    };
 }
 
 export interface PokemonType {
@@ -19,6 +22,13 @@ export interface PokemonStat {
     }
 }
 
+export interface PokemonAbility {
+    ability: {
+        name: string;
+    };
+    is_hidden: boolean;
+}
+
 export interface Pokemon {
     name: string;
     id: number;
@@ -27,6 +37,7 @@ export interface Pokemon {
     sprites: PokemonSprites;
     types: PokemonType[];
     stats: PokemonStat[];
+    abilities: PokemonAbility[];
 }
 
 export interface SearchHistory {
