@@ -1,3 +1,5 @@
+import { BFF_BASE_URL } from '../config.js';
+
 interface FlavorTextEntry {
     flavor_text: string;
     language: { name: string };
@@ -15,7 +17,7 @@ export async function fetchSpecies(nameOrId: string): Promise<PokemonSpecies> {
     const key = nameOrId.toLowerCase();
     if (cache.has(key)) return cache.get(key)!;
 
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${key}`);
+    const response = await fetch(`${BFF_BASE_URL}/pokemon-species/${key}`);
     if (!response.ok) throw new Error('Espécie não encontrada.');
 
     const data = await response.json() as PokemonSpecies;

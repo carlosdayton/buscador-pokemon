@@ -1,6 +1,7 @@
 import { Pokemon } from '../types/pokemon.js';
+import { BFF_BASE_URL } from '../config.js';
 
-// Cache em memória — evita refetch do mesmo Pokémon
+// Cache em memória — evita refetch do mesmo Pokémon dentro da sessão
 const cache = new Map<string, Pokemon>();
 
 export async function fetchPokemon(nameOrId: string): Promise<Pokemon> {
@@ -10,7 +11,7 @@ export async function fetchPokemon(nameOrId: string): Promise<Pokemon> {
         return cache.get(key)!;
     }
 
-    const url = `https://pokeapi.co/api/v2/pokemon/${key}`;
+    const url = `${BFF_BASE_URL}/pokemon/${key}`;
 
     let response: Response;
 
@@ -24,6 +25,10 @@ export async function fetchPokemon(nameOrId: string): Promise<Pokemon> {
         throw new Error(`Pokémon "${nameOrId}" não encontrado. Verifique o nome ou número.`);
     }
 
+    if (response.status === 503) {
+        throw new Error('Serviço temporariamente indisponível. Tente novamente mais tarde.');
+    }
+
     if (response.status === 429) {
         throw new Error('Muitas requisições. Aguarde um momento e tente novamente.');
     }
@@ -34,13 +39,11 @@ export async function fetchPokemon(nameOrId: string): Promise<Pokemon> {
 
     const data = await response.json() as Pokemon;
     cache.set(key, data);
-    // também cacheia pelo id numérico
     cache.set(String(data.id), data);
 
     return data;
 }
 
 export function getRandomPokemonId(): number {
-    // Geração 1-9 tem até 1025 Pokémon
     return Math.floor(Math.random() * 1025) + 1;
 }
