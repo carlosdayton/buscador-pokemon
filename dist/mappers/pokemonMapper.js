@@ -51,7 +51,7 @@ function getWeaknesses(types) {
     // Remove imunidades e fraquezas canceladas entre tipos
     return [...weakSet].filter(w => !immuneSet.has(w));
 }
-export function mapPokemonToUI(apiData) {
+export function mapPokemonToUI(apiData, flavorText = '', genus = '') {
     const typeNames = apiData.types.map(t => t.type.name.toLowerCase());
     const primaryType = typeNames[0] ?? 'normal';
     const weaknesses = getWeaknesses(typeNames);
@@ -60,8 +60,13 @@ export function mapPokemonToUI(apiData) {
         displayId: `#${apiData.id.toString().padStart(3, '0')}`,
         imageUrl: apiData.sprites.other['official-artwork'].front_default
             || apiData.sprites.front_default,
+        shinyUrl: apiData.sprites.other['official-artwork'].front_shiny
+            || apiData.sprites.front_shiny
+            || apiData.sprites.front_default,
         spriteUrl: apiData.sprites.front_default,
         primaryType,
+        flavorText,
+        genus,
         typesHtml: typeNames
             .map(t => `<span class="type-badge type-${t}">${t}</span>`)
             .join(''),

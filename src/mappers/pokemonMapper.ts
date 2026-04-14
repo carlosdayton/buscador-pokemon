@@ -4,6 +4,7 @@ export interface MappedPokemon {
     name: string;
     displayId: string;
     imageUrl: string;
+    shinyUrl: string;
     spriteUrl: string;
     typesHtml: string;
     primaryType: string;
@@ -12,6 +13,8 @@ export interface MappedPokemon {
     statsHtml: string;
     abilitiesHtml: string;
     weaknessesHtml: string;
+    flavorText: string;
+    genus: string;
 }
 
 const STAT_MAX: Record<string, number> = {
@@ -74,10 +77,9 @@ function getWeaknesses(types: string[]): string[] {
     return [...weakSet].filter(w => !immuneSet.has(w));
 }
 
-export function mapPokemonToUI(apiData: Pokemon): MappedPokemon {
+export function mapPokemonToUI(apiData: Pokemon, flavorText = '', genus = ''): MappedPokemon {
     const typeNames = apiData.types.map(t => t.type.name.toLowerCase());
     const primaryType = typeNames[0] ?? 'normal';
-
     const weaknesses = getWeaknesses(typeNames);
 
     return {
@@ -85,8 +87,13 @@ export function mapPokemonToUI(apiData: Pokemon): MappedPokemon {
         displayId: `#${apiData.id.toString().padStart(3, '0')}`,
         imageUrl: apiData.sprites.other['official-artwork'].front_default
                   || apiData.sprites.front_default,
+        shinyUrl: apiData.sprites.other['official-artwork'].front_shiny
+                  || apiData.sprites.front_shiny
+                  || apiData.sprites.front_default,
         spriteUrl: apiData.sprites.front_default,
         primaryType,
+        flavorText,
+        genus,
 
         typesHtml: typeNames
             .map(t => `<span class="type-badge type-${t}">${t}</span>`)

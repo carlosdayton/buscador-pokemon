@@ -10,7 +10,7 @@
   --color-black: #000000;
   --color-white: #FFFFFF;
   --color-bg: #F5F0E8;
-  --color-accent: #FFE500;
+  --color-accent: #ADFF2F;
   --color-error: #FF4444;
   --shadow-sm: 3px 3px 0px var(--color-black);
   --shadow-md: 5px 5px 0px var(--color-black);
@@ -27,7 +27,7 @@
 
 body {
   font-family: var(--font-family);
-  background-color: #FFE500;
+  background-color: #ADFF2F;
   background-image: radial-gradient(circle, #000 1.5px, transparent 1.5px);
   background-size: 24px 24px;
   min-height: 100vh;
@@ -50,6 +50,7 @@ h1 {
 
 .search-container {
   display: flex;
+  gap: 8px;
   margin-bottom: 40px;
   background: var(--color-accent);
   padding: 8px;
@@ -443,12 +444,203 @@ input::placeholder { color: rgba(0,0,0,0.4); }
   color: var(--color-black);
   opacity: 0.3;
 }
+/* SHINY & FAV BUTTONS */
+.pokemon-img-wrapper { position: relative; }
+
+.shiny-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: var(--color-white);
+  border: var(--border-thin);
+  box-shadow: var(--shadow-sm);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: var(--font-weight-black);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: var(--transition-press);
+  color: var(--color-black);
+}
+.shiny-btn:active { transform: translate(3px,3px); box-shadow: 0 0 0 #000; }
+.shiny-btn--active { background: #FFD700; }
+
+.header-left { display: flex; flex-direction: column; gap: 2px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.pokemon-card__genus {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  opacity: 0.6;
+  text-transform: capitalize;
+}
+
+.fav-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform 0.15s ease;
+  padding: 0;
+}
+.fav-btn:hover { transform: scale(1.2); }
+.fav-btn--active { color: #FFD700; text-shadow: 0 0 4px rgba(0,0,0,0.3); }
+
+/* FLAVOR TEXT */
+.flavor-text {
+  width: 100%;
+  padding: 14px 24px;
+  border-bottom: var(--border);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+  opacity: 0.75;
+  text-align: center;
+}
+
+/* RADAR CHART */
+.radar-wrapper {
+  width: 100%;
+  padding: 16px 24px;
+  border-bottom: var(--border);
+  display: flex;
+  justify-content: center;
+}
+
+.radar-chart {
+  width: 200px;
+  height: 200px;
+  color: var(--color-black);
+}
+
+/* STAT BAR ANIMATION */
+@keyframes statGrow {
+  from { width: 0% !important; }
+}
+.stat-bar { animation: statGrow 0.6s cubic-bezier(0.4, 0, 0.2, 1) both; }
+.stat-row:nth-child(1) .stat-bar { animation-delay: 0.05s; }
+.stat-row:nth-child(2) .stat-bar { animation-delay: 0.10s; }
+.stat-row:nth-child(3) .stat-bar { animation-delay: 0.15s; }
+.stat-row:nth-child(4) .stat-bar { animation-delay: 0.20s; }
+.stat-row:nth-child(5) .stat-bar { animation-delay: 0.25s; }
+.stat-row:nth-child(6) .stat-bar { animation-delay: 0.30s; }
+
+/* TOP BAR */
+.top-bar {
+  width: 100%;
+  max-width: 550px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.icon-btn {
+  background: var(--color-white);
+  border: var(--border-thin);
+  box-shadow: var(--shadow-sm);
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: var(--transition-press);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 #000; }
+
+/* RANDOM BUTTON */
+#random-btn {
+  padding: 12px 14px;
+  background: var(--color-white);
+  color: var(--color-black);
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  font-size: 18px;
+  cursor: pointer;
+  transition: var(--transition-press);
+}
+#random-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 #000; }
+
+/* DARK MODE */
+:root.dark {
+  --color-black: #f0e8d0;
+  --color-white: #16213e;
+  --color-bg: #0d0d1a;
+  --color-accent: #c9a800;
+  --color-error: #cc2222;
+  --shadow-sm: 3px 3px 0px #f0e8d0;
+  --shadow-md: 5px 5px 0px #f0e8d0;
+  --shadow-lg: 8px 8px 0px #f0e8d0;
+  --border: 3px solid #f0e8d0;
+  --border-thin: 2px solid #f0e8d0;
+}
+
+:root.dark body {
+  background-color: #1a1200;
+  background-image: radial-gradient(circle, #f0e8d0 1.5px, transparent 1.5px);
+  color: #f0e8d0;
+}
+
+:root.dark .pokemon-card { background: #1e1e32; color: #f0e8d0; }
+:root.dark .pokemon-img-wrapper { background: #0d0d1a; }
+:root.dark .stat-bar-wrapper { background: #2a2a45; }
+:root.dark .ability-badge { background: #2a2a45; color: #f0e8d0; border-color: #f0e8d0; }
+:root.dark .measurement-label { color: #f0e8d0; }
+:root.dark .measurement-value { color: #f0e8d0; }
+:root.dark .stat-name { color: #f0e8d0; }
+:root.dark .stat-value { color: #f0e8d0; }
+:root.dark .section-label { color: #f0e8d0; }
+:root.dark .history-item { background: #1e1e32; color: #f0e8d0; }
+:root.dark .history-name { color: #f0e8d0; }
+:root.dark .history-id { color: #f0e8d0; }
+:root.dark .history-time { color: #f0e8d0; }
+:root.dark .history-header { color: #f0e8d0; }
+:root.dark .history-header button { background: #1e1e32; color: #f0e8d0; }
+:root.dark input { color: #f0e8d0; }
+:root.dark input::placeholder { color: rgba(240,232,208,0.35); }
+:root.dark .icon-btn { background: #1e1e32; color: #f0e8d0; }
+:root.dark #random-btn { background: #1e1e32; color: #f0e8d0; }
+:root.dark h1 { color: #f0e8d0; }
+
+/* RESPONSIVIDADE MOBILE */
+@media (max-width: 600px) {
+  body { padding: 20px 12px; }
+
+  h1 { font-size: 1.4rem; margin-bottom: 20px; }
+
+  .search-container, #result, #history, .top-bar { max-width: 100%; }
+
+  input { font-size: 14px; padding: 10px 12px; }
+
+  #btn { padding: 10px 16px; font-size: 13px; }
+
+  #random-btn { padding: 10px 12px; }
+
+  .pokemon-card__name { font-size: 1.2rem; }
+
+  .pokemon-img { width: 160px; height: 160px; }
+
+  .stat-name { width: 80px; font-size: 9px; }
+
+  .stat-value { width: 28px; font-size: 12px; }
+
+  .section-label { width: 70px; font-size: 9px; }
+
+  .measurement-item { padding: 12px 8px; }
+}
+
   </style>
 </head>
 <body>
   <h1>🔍 Buscar Pokémon</h1>
+  <div class="top-bar">
+    <button id="theme-btn" class="icon-btn" title="Alternar tema">🌙</button>
+  </div>
   <div class="search-container">
     <input type="text" id="input" placeholder="Nome ou número (ex: pikachu, 25)" />
+    <button id="random-btn" title="Pokémon aleatório">🎲</button>
     <button id="btn">Buscar</button>
   </div>
   <div id="result"></div>

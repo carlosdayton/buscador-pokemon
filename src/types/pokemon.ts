@@ -2,9 +2,11 @@ import { MappedPokemon } from "../mappers/pokemonMapper";
 
 export interface PokemonSprites {
     front_default: string;
+    front_shiny: string;
     other: {
         'official-artwork': {
             front_default: string;
+            front_shiny: string;
         };
     };
 }
