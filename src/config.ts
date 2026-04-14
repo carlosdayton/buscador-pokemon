@@ -2,4 +2,4 @@
 // Em desenvolvimento local, use http://localhost:8000
 export const BFF_BASE_URL =
     (window as unknown as Record<string, string>).__BFF_BASE_URL__ ??
-    'http://localhost:8000';
+    'https://buscador-pokemon-production.up.railway.app';
