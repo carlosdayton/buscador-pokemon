@@ -3,23 +3,22 @@ import { SearchHistory } from '../types/pokemon.js';
 import { isFavorite } from '../services/favoritesService.js';
 
 const TYPE_COLOR_MAP: Record<string, string> = {
-    normal:   '#A8A878', fire:     '#FF4500', water:    '#4169E1',
-    electric: '#FFD700', grass:    '#32CD32', ice:      '#00CED1',
-    fighting: '#DC143C', poison:   '#9400D3', ground:   '#DAA520',
-    flying:   '#87CEEB', psychic:  '#FF1493', bug:      '#6B8E23',
-    rock:     '#808080', ghost:    '#483D8B', dragon:   '#4B0082',
-    dark:     '#2F2F2F', steel:    '#B0C4DE', fairy:    '#FF69B4',
+    normal:   '#9e9e7e', fire:     '#e8603c', water:    '#3b7bdd',
+    electric: '#d4a800', grass:    '#28a745', ice:      '#00acc1',
+    fighting: '#c62828', poison:   '#8e24aa', ground:   '#c8963a',
+    flying:   '#5b9fc9', psychic:  '#d81b60', bug:      '#558b2f',
+    rock:     '#757575', ghost:    '#4527a0', dragon:   '#4a1a8c',
+    dark:     '#333333', steel:    '#8ea2b0', fairy:    '#e91e8c',
 };
 
 // Radar chart SVG — 6 stats em hexágono
 function buildRadarSvg(statsHtml: string): string {
-    // Extrai valores das barras (width: X%)
     const pcts = [...statsHtml.matchAll(/width:\s*(\d+)%/g)].map(m => parseInt(m[1]) / 100);
     if (pcts.length < 6) return '';
 
-    const cx = 100, cy = 100, r = 80;
+    const cx = 100, cy = 100, r = 72;
     const labels = ['HP', 'ATK', 'DEF', 'SpA', 'SpD', 'SPD'];
-    const colors = ['#FF4444','#FF8C00','#4169E1','#9400D3','#32CD32','#00CED1'];
+    const colors = ['#ef4444','#f97316','#3b82f6','#a855f7','#22c55e','#06b6d4'];
     const angles = labels.map((_, i) => (Math.PI * 2 * i) / 6 - Math.PI / 2);
 
     const gridPoints = (scale: number) =>
@@ -30,30 +29,42 @@ function buildRadarSvg(statsHtml: string): string {
     ).join(' ');
 
     const gridLines = [0.25, 0.5, 0.75, 1].map(s =>
-        `<polygon points="${gridPoints(s)}" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>`
+        `<polygon points="${gridPoints(s)}" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.12"/>`
     ).join('');
 
     const axisLines = angles.map(a =>
-        `<line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(a)}" y2="${cy + r * Math.sin(a)}" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>`
+        `<line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(a)}" y2="${cy + r * Math.sin(a)}" stroke="currentColor" stroke-width="0.5" opacity="0.12"/>`
     ).join('');
+
+    const filled = `<polygon points="${dataPoints}" fill="url(#radFill)" fill-opacity="0.25" stroke="url(#radStroke)" stroke-width="1.5"/>`;
 
     const dots = angles.map((a, i) => {
         const x = cx + r * pcts[i] * Math.cos(a);
         const y = cy + r * pcts[i] * Math.sin(a);
-        return `<circle cx="${x}" cy="${y}" r="4" fill="${colors[i]}" stroke="#000" stroke-width="1.5"/>`;
+        return `<circle cx="${x}" cy="${y}" r="3.5" fill="${colors[i]}" opacity="0.9"/>`;
     }).join('');
 
     const labelEls = angles.map((a, i) => {
-        const lx = cx + (r + 16) * Math.cos(a);
-        const ly = cy + (r + 16) * Math.sin(a);
-        return `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="900" font-family="Space Grotesk,sans-serif" fill="${colors[i]}">${labels[i]}</text>`;
+        const lx = cx + (r + 18) * Math.cos(a);
+        const ly = cy + (r + 18) * Math.sin(a);
+        return `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700" font-family="Inter,sans-serif" fill="${colors[i]}" opacity="0.85">${labels[i]}</text>`;
     }).join('');
 
     return `
     <svg viewBox="0 0 200 200" class="radar-chart" aria-label="Radar de stats">
+      <defs>
+        <linearGradient id="radFill" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7c6af7"/>
+          <stop offset="100%" stop-color="#e96df0"/>
+        </linearGradient>
+        <linearGradient id="radStroke" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7c6af7"/>
+          <stop offset="100%" stop-color="#e96df0"/>
+        </linearGradient>
+      </defs>
       ${gridLines}
       ${axisLines}
-      <polygon points="${dataPoints}" fill="rgba(0,0,0,0.08)" stroke="#000" stroke-width="2"/>
+      ${filled}
       ${dots}
       ${labelEls}
     </svg>`;
@@ -61,65 +72,89 @@ function buildRadarSvg(statsHtml: string): string {
 
 export function renderPokemon(pokemon: MappedPokemon): void {
     const result = document.getElementById("result")!;
-    const headerColor = TYPE_COLOR_MAP[pokemon.primaryType] ?? '#ADFF2F';
+    const heroColor = TYPE_COLOR_MAP[pokemon.primaryType] ?? '#7c6af7';
     const fav = isFavorite(pokemon.displayId);
     const radar = buildRadarSvg(pokemon.statsHtml);
 
     result.innerHTML = `
         <div class="pokemon-card">
-            <div class="pokemon-card__header" data-primary-type="${pokemon.primaryType}" style="background-color: ${headerColor}">
-                <div class="header-left">
-                    <span class="pokemon-card__id">${pokemon.displayId}</span>
-                    ${pokemon.genus ? `<span class="pokemon-card__genus">${pokemon.genus}</span>` : ''}
-                </div>
-                <div class="header-right">
-                    <button class="fav-btn ${fav ? 'fav-btn--active' : ''}" data-action="favorite" title="Favoritar">
-                        ${fav ? '★' : '☆'}
-                    </button>
-                    <h2 class="pokemon-card__name">${pokemon.name}</h2>
-                </div>
-            </div>
 
-            <div class="pokemon-img-wrapper">
-                <img id="pokemon-main-img" src="${pokemon.imageUrl}" class="pokemon-img" alt="${pokemon.name}"
-                     onerror="this.src='${pokemon.spriteUrl}'" />
+            <!-- Hero -->
+            <div class="pokemon-card__hero">
+                <div class="pokemon-card__hero-bg" style="background: ${heroColor}; opacity: 0.14;"></div>
+                <div class="pokemon-card__hero-glow" style="--hero-color: ${heroColor}66;"></div>
+
+                <!-- Buttons -->
+                <button class="fav-btn ${fav ? 'fav-btn--active' : ''}" data-action="favorite" title="Favoritar">
+                    ${fav ? '★' : '☆'}
+                </button>
                 <button class="shiny-btn" data-action="shiny"
                         data-normal="${pokemon.imageUrl}"
                         data-shiny="${pokemon.shinyUrl}"
                         data-normal-fallback="${pokemon.spriteUrl}"
+                        data-state="normal"
                         title="Ver versão shiny">
                     ✨ Shiny
                 </button>
-            </div>
 
-            ${pokemon.flavorText ? `<div class="flavor-text">${pokemon.flavorText}</div>` : ''}
-
-            <div class="types-container">${pokemon.typesHtml}</div>
-
-            <div class="measurements">
-                <div class="measurement-item">
-                    <span class="measurement-label">Altura</span>
-                    <span class="measurement-value">${pokemon.heightText}</span>
+                <!-- Image -->
+                <div class="pokemon-card__img-wrap">
+                    <img id="pokemon-main-img" src="${pokemon.imageUrl}" class="pokemon-img" alt="${pokemon.name}"
+                         onerror="this.src='${pokemon.spriteUrl}'" />
                 </div>
-                <div class="measurement-item">
-                    <span class="measurement-label">Peso</span>
-                    <span class="measurement-value">${pokemon.weightText}</span>
+
+                <!-- Meta -->
+                <div class="pokemon-card__meta">
+                    <span class="pokemon-card__id">${pokemon.displayId}</span>
+                    <h2 class="pokemon-card__name">${pokemon.name.toLowerCase()}</h2>
+                    ${pokemon.genus ? `<span class="pokemon-card__genus">${pokemon.genus}</span>` : ''}
+                    <div class="pokemon-card__type-row">${pokemon.typesHtml}</div>
                 </div>
             </div>
 
-            <div class="abilities-container">
-                <span class="section-label">Habilidades</span>
-                <div class="abilities-list">${pokemon.abilitiesHtml}</div>
+            <!-- Body -->
+            <div class="pokemon-card__body">
+
+                ${pokemon.flavorText ? `<div class="flavor-text">${pokemon.flavorText}</div>` : ''}
+
+                <!-- Height / Weight -->
+                <div class="info-row">
+                    <div class="info-item">
+                        <span class="info-label">Altura</span>
+                        <span class="info-value">${pokemon.heightText}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Peso</span>
+                        <span class="info-value">${pokemon.weightText}</span>
+                    </div>
+                </div>
+
+                <!-- Abilities -->
+                <div class="section">
+                    <p class="section__title">Habilidades</p>
+                    <div class="badges-row">${pokemon.abilitiesHtml}</div>
+                </div>
+
+                <!-- Weaknesses -->
+                <div class="section">
+                    <p class="section__title">Fraquezas</p>
+                    <div class="badges-row">${pokemon.weaknessesHtml}</div>
+                </div>
+
+                <!-- Radar -->
+                ${radar ? `
+                <div class="section" style="border-bottom: 1px solid var(--border);">
+                    <p class="section__title">Radar de Stats</p>
+                    <div class="radar-wrapper">${radar}</div>
+                </div>` : ''}
+
+                <!-- Stats bars -->
+                <div class="section">
+                    <p class="section__title">Base Stats</p>
+                    <div>${pokemon.statsHtml}</div>
+                </div>
+
             </div>
-
-            <div class="weaknesses-container">
-                <span class="section-label">Fraquezas</span>
-                <div class="weaknesses-list">${pokemon.weaknessesHtml}</div>
-            </div>
-
-            ${radar ? `<div class="radar-wrapper">${radar}</div>` : ''}
-
-            <div class="stats-container">${pokemon.statsHtml}</div>
         </div>
     `;
 }
@@ -128,7 +163,7 @@ export function renderError(message: string): void {
     const result = document.getElementById("result")!;
     result.innerHTML = `
         <div class="error-card">
-            <span class="error-icon">✕</span>
+            <div class="error-icon">✕</div>
             <p class="error-message">${message}</p>
         </div>
     `;
@@ -150,17 +185,18 @@ export function renderHistory(history: readonly SearchHistory[]): void {
             <div class="history-item" data-name="${entry.pokemon.name.toLowerCase()}" tabindex="0" data-index="${index}">
                 <img src="${entry.pokemon.spriteUrl}" alt="${entry.pokemon.name}" />
                 <div class="history-info">
-                    <span class="history-name">${entry.pokemon.name}</span>
+                    <span class="history-name">${entry.pokemon.name.toLowerCase()}</span>
                     <span class="history-id">${entry.pokemon.displayId}</span>
                 </div>
                 <span class="history-time">${time}</span>
+                <span class="history-arrow">›</span>
             </div>
         `;
     }).join('');
 
     container.innerHTML = `
         <div class="history-header">
-            <span>Buscas recentes</span>
+            <span class="history-header__title">Buscas recentes</span>
             <button id="clear-btn">Limpar</button>
         </div>
         <div class="history-list">${items}</div>
